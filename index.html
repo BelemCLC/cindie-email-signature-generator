@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cindie Email Signature Generator</title>
+  <style>
+    :root {
+      --midnight: #0b1020;
+      --blue: #2563ff;
+      --silver: #e5e7eb;
+      --soft: #f6f8fb;
+      --ink: #111827;
+      --muted: #657084;
+      --line: #dde4ef;
+      --ok: #159b62;
+      color-scheme: light;
+      font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: var(--soft);
+      padding: 28px;
+      overflow: auto;
+    }
+
+    main {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-width: 0;
+      background:
+        linear-gradient(90deg, rgba(11, 16, 32, .035), transparent 32%),
+        #fff;
+    }
+
+    .brand-lockup {
+      width: 190px;
+      height: auto;
+      display: block;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      line-height: 1.08;
+      letter-spacing: 0;
+      color: var(--midnight);
+    }
+
+    .subhead {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    form {
+      display: grid;
+      gap: 22px;
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    legend {
+      padding: 0 0 2px;
+      color: var(--midnight);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: #243047;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid #ccd5e3;
+      background: #fff;
+      color: var(--midnight);
+      border-radius: 8px;
+      min-height: 42px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 255, .14);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .workspace-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 28px 34px 0;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .preview-wrap {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      padding: 36px 34px;
+      min-width: 0;
+    }
+
+    .preview-stage {
+      width: min(100%, 760px);
+      overflow-x: auto;
+      padding: 18px 0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid var(--line);
+      padding: 18px 34px 28px;
+    }
+
+    .client-notes {
+      border-top: 1px solid var(--line);
+      padding: 0 34px 30px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .client-notes h2 {
+      margin: 0 0 8px;
+      color: var(--midnight);
+      font-size: 14px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .client-notes p {
+      margin: 0 0 8px;
+    }
+
+    button, .asset-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 1px solid var(--midnight);
+      border-radius: 8px;
+      padding: 0 14px;
+      background: var(--midnight);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+    }
+
+    button:hover, .asset-link:hover { transform: translateY(-1px); }
+
+    button.secondary, .asset-link.secondary {
+      background: #fff;
+      color: var(--midnight);
+      border-color: #c9d3e2;
+    }
+
+    .button-icon {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+
+    .invalid {
+      border-color: #d04a4a !important;
+      box-shadow: 0 0 0 3px rgba(208, 74, 74, .12) !important;
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      .workspace-head, .preview-wrap, .actions, .client-notes { padding-left: 20px; padding-right: 20px; }
+    }
+
+    @media (max-width: 560px) {
+      aside { padding: 22px 18px; }
+      .row { grid-template-columns: 1fr; }
+      .workspace-head { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <img class="brand-lockup" src="assets/logos/cindie-lockup.svg" alt="Cindie">
+      <h1>Email Signature Generator</h1>
+      <p class="subhead">SF Pro, Midnight, Electric Blue, and the Cindie chat mark are baked into the footer.</p>
+
+      <form id="signatureForm">
+        <fieldset>
+          <legend>Profile</legend>
+          <label>Name <input required id="name" value="Alex Morgan" autocomplete="name"></label>
+          <label>Job Title <input required id="title" value="Loan Officer" autocomplete="organization-title"></label>
+          <div class="row">
+            <label>Phone <input required id="phone" value="949-302-7255" autocomplete="tel"></label>
+            <label>Email <input required id="email" value="alex@cindie.com" autocomplete="email"></label>
+          </div>
+          <label>Address <input required id="address" value="1201 Puerta Del Sol, Suite 228, San Clemente, CA 92673" autocomplete="street-address"></label>
+          <label>Headshot <input id="headshot" type="file" accept="image/*"></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Primary CTA</legend>
+          <div class="row">
+            <label>Button Text <input id="ctaText" value="Browse Cindie"></label>
+            <label>Cindie URL <input id="ctaUrl" value="https://cindie.com" inputmode="url"></label>
+          </div>
+          <label>Logo Placement
+            <select id="logoPlacement">
+              <option value="right">Right of profile</option>
+              <option value="top">Top of details</option>
+              <option value="bottom">Bottom of details</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Optional Platform Links</legend>
+          <label>Website <input id="webUrl" inputmode="url" placeholder="https://"></label>
+          <label>Calendar <input id="calendarUrl" inputmode="url" placeholder="https://"></label>
+          <label>LinkedIn <input id="linkedinUrl" inputmode="url" placeholder="https://"></label>
+          <label>Instagram <input id="instagramUrl" inputmode="url" placeholder="https://"></label>
+          <div class="row">
+            <label>Facebook <input id="facebookUrl" inputmode="url" placeholder="https://"></label>
+            <label>YouTube <input id="youtubeUrl" inputmode="url" placeholder="https://"></label>
+          </div>
+        </fieldset>
+
+      </form>
+    </aside>
+
+    <main>
+      <div class="workspace-head">
+        <div>
+          <h1>Live Preview</h1>
+          <p class="subhead">The generated footer keeps optional links hidden until a URL is added.</p>
+        </div>
+        <div class="status" id="status">Ready</div>
+      </div>
+      <section class="preview-wrap" aria-label="Signature preview">
+        <div class="preview-stage" id="preview"></div>
+      </section>
+      <div class="actions">
+        <button id="copyHtml" type="button">
+          <svg class="button-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy Signature
+        </button>
+        <button id="downloadHtml" class="secondary" type="button">
+          <svg class="button-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>
+          Download
+        </button>
+        <button id="resetDemo" class="secondary" type="button">
+          <svg class="button-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 3v6h6"></path></svg>
+          Reset
+        </button>
+      </div>
+      <section class="client-notes" aria-label="How to install">
+        <h2>Install the signature</h2>
+        <p>Paste into the signature settings area for Gmail, Outlook, or Apple Mail. Do not paste it into a normal email compose window.</p>
+        <p>For best copy behavior, use the hosted version of this page in Chrome, Edge, or Safari.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const MIDNIGHT = "#0B1020";
+    const BLUE = "#2563FF";
+    const SILVER = "#E5E7EB";
+    const fields = [
+      "name", "title", "phone", "email", "address", "ctaText", "ctaUrl", "logoPlacement",
+      "webUrl", "calendarUrl", "linkedinUrl", "instagramUrl", "facebookUrl", "youtubeUrl"
+    ];
+    const form = document.getElementById("signatureForm");
+    const preview = document.getElementById("preview");
+    const statusEl = document.getElementById("status");
+
+    let headshotData = makeHeadshotPlaceholder();
+    let latestSignatureHtml = "";
+
+    function esc(value) {
+      return String(value || "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[char]));
+    }
+
+    function normalizeUrl(value) {
+      const trimmed = String(value || "").trim();
+      if (!trimmed) return "";
+      if (/^(https?:|mailto:|tel:)/i.test(trimmed)) return trimmed;
+      return "https://" + trimmed;
+    }
+
+    function svgData(svg) {
+      return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.replace(/\s+/g, " ").trim());
+    }
+
+    function cindieLockupSvg() {
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-label="Cindie logo">
+        <g transform="translate(0 8) scale(.64)">
+          <path d="M42 34h154a28 28 0 0 1 28 28v101a28 28 0 0 1-28 28h-75l-45 31v-31H70a28 28 0 0 1-28-28V62a28 28 0 0 1 28-28Z" fill="${MIDNIGHT}"/>
+          <text x="83" y="158" fill="#fff" font-family="Arial, sans-serif" font-size="105" font-weight="800">C</text>
+          <path d="M181 47l8 18 18 8-18 8-8 18-8-18-18-8 18-8 8-18Z" fill="${BLUE}"/>
+          <path d="M208 34l4 9 9 4-9 4-4 9-4-9-9-4 9-4 4-9Z" fill="${BLUE}"/>
+        </g>
+        <text x="176" y="111" fill="${MIDNIGHT}" font-family="Arial, sans-serif" font-size="82" font-weight="800">Cindie</text>
+        <path d="M480 47l8 18 18 8-18 8-8 18-8-18-18-8 18-8 8-18Z" fill="${BLUE}"/>
+      </svg>`;
+    }
+
+    function contactIcon(type) {
+      const iconPaths = {
+        phone: `<path fill="#fff" d="M22 19.5c-.4-.4-2.7-1.8-3.2-1.8-.3 0-.6.2-1 .6l-.5.6c-.2.2-.4.3-.6.3-.3 0-.8-.2-1.8-.9-1.2-.9-2.2-2-2.8-3-.4-.7-.3-1.1 0-1.4l.5-.6c.3-.4.5-.7.5-1 0-.5-1.1-2.9-1.5-3.4-.3-.4-.6-.4-.9-.4-.2 0-.4 0-.6.1C9.3 8.9 8 10.1 8 11.7c0 1.1.4 2.3 1.3 3.7 1.7 2.6 4.9 5.8 7.8 7.1 1.2.6 2.7 1 3.8.5 1.5-.6 2.6-2.1 2.7-2.9.1-.3-.1-.4-.6-.6Z"/>`,
+        email: `<rect x="7" y="10" width="18" height="12" rx="1.8" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M8 11l8 6 8-6" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`,
+        address: `<path d="M16 6.8c-3.3 0-6 2.6-6 5.9 0 4.2 6 10.5 6 10.5s6-6.3 6-10.5c0-3.3-2.7-5.9-6-5.9Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="12.7" r="2.1" fill="none" stroke="#fff" stroke-width="2"/>`
+      };
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="${MIDNIGHT}"/>${iconPaths[type] || ""}</svg>`;
+      return `<img src="${svgData(svg)}" width="24" height="24" border="0" alt="" style="display:block;width:24px;height:24px;border:0;">`;
+    }
+
+    function circleLabel(label) {
+      return `<span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${MIDNIGHT};color:#fff;text-align:center;line-height:24px;font-family:Arial,sans-serif;font-size:10px;font-weight:700;">${esc(label)}</span>`;
+    }
+
+    function contactRow(type, value, href) {
+      if (!value) return "";
+      const content = href
+        ? `<a href="${esc(href)}" style="color:${MIDNIGHT};text-decoration:none;">${esc(value)}</a>`
+        : `<span style="color:${MIDNIGHT};">${esc(value)}</span>`;
+      return `<tr>
+        <td style="width:32px;padding:4px 8px 4px 0;vertical-align:top;">${contactIcon(type)}</td>
+        <td style="padding:4px 0;vertical-align:top;font-family:Arial,sans-serif;font-size:14px;line-height:19px;color:${MIDNIGHT};">${content}</td>
+      </tr>`;
+    }
+
+    function socialLinks(data) {
+      const links = [
+        ["WEB", data.webUrl],
+        ["CAL", data.calendarUrl],
+        ["in", data.linkedinUrl],
+        ["IG", data.instagramUrl],
+        ["f", data.facebookUrl],
+        ["YT", data.youtubeUrl]
+      ].filter(([, url]) => normalizeUrl(url));
+
+      if (!links.length) return "";
+      return `<tr><td colspan="2" style="padding-top:14px;">
+        ${links.map(([label, url]) => `<a href="${esc(normalizeUrl(url))}" style="display:inline-block;margin-right:7px;text-decoration:none;">${circleLabel(label)}</a>`).join("")}
+      </td></tr>`;
+    }
+
+    function makeHeadshotPlaceholder() {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280">
+        <path d="M34 20h198a28 28 0 0 1 28 28v143a28 28 0 0 1-28 28h-92l-54 37v-37H62a28 28 0 0 1-28-28V48a28 28 0 0 1 28-28Z" fill="#F6F8FB" stroke="${SILVER}" stroke-width="8"/>
+        <circle cx="142" cy="105" r="41" fill="${BLUE}" opacity=".16"/>
+        <path d="M83 196c10-37 35-56 59-56s49 19 59 56" fill="${BLUE}" opacity=".16"/>
+        <path d="M210 47l8 18 18 8-18 8-8 18-8-18-18-8 18-8 8-18Z" fill="${BLUE}"/>
+      </svg>`;
+      return svgData(svg);
+    }
+
+    function currentData() {
+      return Object.fromEntries(fields.map(id => [id, document.getElementById(id).value.trim()]));
+    }
+
+    function profileBlock(data, includeLogo) {
+      const logo = includeLogo ? `<img src="${svgData(cindieLockupSvg())}" width="164" alt="Cindie" style="display:block;width:164px;height:auto;margin-bottom:10px;">` : "";
+      return `<td style="width:210px;padding:22px 24px;vertical-align:top;text-align:center;border-right:1px solid ${SILVER};">
+        <img src="${headshotData}" width="104" height="104" alt="" style="display:block;width:104px;height:104px;margin:0 auto 12px;border:0;">
+        <div style="font-family:Arial,sans-serif;font-size:16px;line-height:20px;font-weight:700;color:${MIDNIGHT};">${esc(data.name)}</div>
+        <div style="font-family:Arial,sans-serif;font-size:14px;line-height:19px;color:${MIDNIGHT};">${esc(data.title)}</div>
+        <div style="padding-top:16px;">${logo}<a href="${esc(normalizeUrl(data.ctaUrl))}" style="display:inline-block;background:${BLUE};color:#fff;font-family:Arial,sans-serif;font-size:14px;line-height:18px;font-weight:700;text-decoration:none;border-radius:7px;padding:9px 15px;">${esc(data.ctaText || "Browse Cindie")}</a></div>
+      </td>`;
+    }
+
+    function detailBlock(data) {
+      const topLogo = data.logoPlacement === "top" ? `<img src="${svgData(cindieLockupSvg())}" width="176" alt="Cindie" style="display:block;width:176px;height:auto;margin:0 0 10px;">` : "";
+      const bottomLogo = data.logoPlacement === "bottom" ? `<tr><td colspan="2" style="padding-top:12px;"><img src="${svgData(cindieLockupSvg())}" width="158" alt="Cindie" style="display:block;width:158px;height:auto;"></td></tr>` : "";
+      return `<td style="padding:22px 24px;vertical-align:top;">
+        ${topLogo}
+        <div style="font-family:Arial,sans-serif;font-size:14px;line-height:19px;color:${MIDNIGHT};font-style:italic;margin-bottom:9px;">Your Home Expert for Life.</div>
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;">
+          ${contactRow("phone", data.phone, `tel:${data.phone.replace(/[^+0-9]/g, "")}`)}
+          ${contactRow("email", data.email, `mailto:${data.email}`)}
+          ${contactRow("address", data.address, "")}
+          ${socialLinks(data)}
+          ${bottomLogo}
+        </table>
+      </td>`;
+    }
+
+    function buildSignature(data) {
+      const logoCell = data.logoPlacement === "right"
+        ? `<td style="width:176px;padding:22px 24px 22px 0;vertical-align:top;text-align:right;"><img src="${svgData(cindieLockupSvg())}" width="164" alt="Cindie" style="display:block;width:164px;height:auto;margin-left:auto;"></td>`
+        : "";
+      return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="width:640px;max-width:640px;border-collapse:collapse;border-top:4px solid ${MIDNIGHT};border-bottom:4px solid ${BLUE};background:#ffffff;">
+        <tr>
+          ${profileBlock(data, false)}
+          ${detailBlock(data)}
+          ${logoCell}
+        </tr>
+      </table>`;
+    }
+
+    function validateRequired() {
+      let ok = true;
+      ["name", "title", "phone", "email", "address"].forEach(id => {
+        const input = document.getElementById(id);
+        const valid = input.value.trim().length > 0;
+        input.classList.toggle("invalid", !valid);
+        ok = ok && valid;
+      });
+      return ok;
+    }
+
+    function render() {
+      const data = currentData();
+      const html = buildSignature(data);
+      preview.innerHTML = html;
+      latestSignatureHtml = html;
+      statusEl.textContent = validateRequired() ? "Ready" : "Missing required fields";
+    }
+
+    function makeBubbleFromImage(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const size = 280;
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, size, size);
+          ctx.save();
+          roundedBubblePath(ctx, 28, 16, 224, 206, 30);
+          ctx.clip();
+          const ratio = Math.max(224 / img.width, 206 / img.height);
+          const w = img.width * ratio;
+          const h = img.height * ratio;
+          ctx.drawImage(img, 28 + (224 - w) / 2, 16 + (206 - h) / 2, w, h);
+          ctx.restore();
+          ctx.lineWidth = 6;
+          ctx.strokeStyle = "#FFFFFF";
+          roundedBubblePath(ctx, 28, 16, 224, 206, 30);
+          ctx.stroke();
+          headshotData = canvas.toDataURL("image/png");
+          render();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function roundedBubblePath(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.lineTo(x + w * .46, y + h);
+      ctx.lineTo(x + w * .18, y + h + 34);
+      ctx.lineTo(x + w * .18, y + h);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function download(filename, contents) {
+      const blob = new Blob([contents], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function copySignature() {
+      const fullHtml = `<!doctype html><html><head><meta charset="utf-8"></head><body>${latestSignatureHtml}</body></html>`;
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "text/html": new Blob([fullHtml], { type: "text/html" }),
+              "text/plain": new Blob([preview.innerText.trim()], { type: "text/plain" })
+            })
+          ]);
+          return;
+        } catch (error) {
+          // Some browsers limit rich clipboard writes from local files.
+        }
+      }
+
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(preview);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      const copied = document.execCommand("copy");
+      selection.removeAllRanges();
+      if (!copied) throw new Error("Copy command was blocked");
+    }
+
+    fields.forEach(id => document.getElementById(id).addEventListener("input", render));
+    document.getElementById("headshot").addEventListener("change", event => {
+      const [file] = event.target.files;
+      if (file) makeBubbleFromImage(file);
+    });
+    document.getElementById("copyHtml").addEventListener("click", async () => {
+      try {
+        await copySignature();
+        statusEl.textContent = "Signature copied";
+      } catch (error) {
+        statusEl.textContent = "Select the preview, then copy";
+      }
+      window.setTimeout(render, 1200);
+    });
+    document.getElementById("downloadHtml").addEventListener("click", () => {
+      download("cindie-email-signature.html", `<!doctype html><meta charset="utf-8">${latestSignatureHtml}`);
+    });
+    document.getElementById("resetDemo").addEventListener("click", () => {
+      form.reset();
+      document.getElementById("name").value = "Alex Morgan";
+      document.getElementById("title").value = "Loan Officer";
+      document.getElementById("phone").value = "949-302-7255";
+      document.getElementById("email").value = "alex@cindie.com";
+      document.getElementById("address").value = "1201 Puerta Del Sol, Suite 228, San Clemente, CA 92673";
+      document.getElementById("ctaText").value = "Browse Cindie";
+      document.getElementById("ctaUrl").value = "https://cindie.com";
+      headshotData = makeHeadshotPlaceholder();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
